@@ -1,0 +1,123 @@
+<!--<!DOCTYPE html>-->
+<!--<html lang="en">-->
+<!--<head>-->
+<!--  <meta charset="UTF-8">-->
+<!--  <title>Right Frame (Camera View)</title>-->
+<!--  <style>-->
+<!--    html, body {-->
+<!--      margin: 0;-->
+<!--      padding: 0;-->
+<!--      width: 100%;-->
+<!--      height: 100%;-->
+<!--    }-->
+
+<!--    video {-->
+<!--      width: 100%;-->
+<!--      height: 100%;-->
+<!--    }-->
+<!--  </style>-->
+<!--</head>-->
+<!--<body>-->
+<!--<video id="camera-view" autoplay playsinline></video>-->
+
+<!--<script>-->
+<!--  async function startCamera() {-->
+<!--    try {-->
+<!--      const stream = await navigator.mediaDevices.getUserMedia({ video: true });-->
+<!--      const videoElement = document.getElementById('camera-view');-->
+<!--      videoElement.srcObject = stream;-->
+<!--    } catch (error) {-->
+<!--      console.error('Error accessing camera:', error);-->
+<!--    }-->
+<!--  }-->
+
+<!--  // Call the function to start the camera when the page loads-->
+<!--  window.addEventListener('load', startCamera);-->
+<!--</script>-->
+<!--</body>-->
+<!--</html>-->
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils_3d/control_utils_3d.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js" crossorigin="anonymous"></script>
+  <style>
+    body{
+      background: linear-gradient(178.6deg, rgb(20, 36, 50) 11.8%, rgb(124, 143, 161) 83.8%);
+    }
+  </style>
+</head>
+
+<body>
+<div class="container">
+  <video class="input_video"></video>
+  <canvas class="output_canvas" width="1280px" height="720px"></canvas>
+  <div class="landmark-grid-container"></div>
+</div>
+<script type="module">
+  const videoElement = document.getElementsByClassName('input_video')[0];
+  const canvasElement = document.getElementsByClassName('output_canvas')[0];
+  const canvasCtx = canvasElement.getContext('2d');
+  const landmarkContainer = document.getElementsByClassName('landmark-grid-container')[0];
+  const grid = new LandmarkGrid(landmarkContainer);
+
+  function onResults(results) {
+    if (!results.poseLandmarks) {
+      grid.updateLandmarks([]);
+      return;
+    }
+
+    canvasCtx.save();
+    canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+    canvasCtx.drawImage(results.segmentationMask, 0, 0,
+            canvasElement.width, canvasElement.height);
+
+    // Only overwrite existing pixels.
+    canvasCtx.globalCompositeOperation = 'source-in';
+    canvasCtx.fillStyle = 'rgba(255,255,255,0)';
+    canvasCtx.fillRect(0, 0, canvasElement.width, canvasElement.height);
+
+    // Only overwrite missing pixels.
+    canvasCtx.globalCompositeOperation = 'destination-atop';
+    canvasCtx.drawImage(
+            results.image, 0, 0, canvasElement.width, canvasElement.height);
+
+    canvasCtx.globalCompositeOperation = 'source-over';
+    drawConnectors(canvasCtx, results.poseLandmarks, POSE_CONNECTIONS,
+            {color: '#00FF00', lineWidth: 4}
+    );
+    drawLandmarks(canvasCtx, results.poseLandmarks,
+            {color: '#FF0000', lineWidth: 2});
+    canvasCtx.restore();
+
+    grid.updateLandmarks(results.poseWorldLandmarks);
+  }
+
+  const pose = new Pose({locateFile: (file) => {
+      return `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`;
+    }});
+  pose.setOptions({
+    modelComplexity: 1,
+    smoothLandmarks: true,
+    enableSegmentation: true,
+    smoothSegmentation: true,
+    minDetectionConfidence: 0.5,
+    minTrackingConfidence: 0.5
+  });
+  pose.onResults(onResults);
+
+  const camera = new Camera(videoElement, {
+    onFrame: async () => {
+      await pose.send({image: videoElement});
+    },
+    width: 1280,
+    height: 720
+  });
+  camera.start();
+</script>
+</body>
+</html>

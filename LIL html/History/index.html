@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>History</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" integrity="sha512-16esztaSRplJROstbIIdwX3N97V1+pZvV33ABoG1H2OyTttBxEGkTsoIVsiP1iaTtM8b3+hu2kB6pQ4Clr5yug==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <style>
+        @import url("https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500;600;700&display=swap");
+        @import url("https://fonts.googleapis.com/css2?family=Source+Sans+Pro&display=swap");
+        body {
+            background: #1b2026;
+            min-height: 200vh;
+            padding: 0px 0;
+        }
+
+        .container {
+            padding-right: 50px;
+            padding-left: 50px;
+        }
+        @media (min-width: 1024px) {
+            .container {
+                padding-right: 124px;
+                padding-left: 124px;
+            }
+        }
+        @media (min-width: 1440px) {
+            .container {
+                max-width: 1440px;
+                margin-right: auto;
+                margin-left: auto;
+                padding-right: 196px;
+                padding-left: 196px;
+            }
+        }
+
+        h1 {
+            font-family: "Source Code Pro", monospace;
+            font-size: 60px;
+            color: #fff;
+            margin-bottom: 50px;
+        }
+
+        p {
+            font-family: "Source Code Pro", monospace;
+        }
+
+        .accordions__inner {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .accordion {
+            background: #2a3039;
+            width: auto;
+            border-radius: 12px;
+            height: 80px;
+            will-change: height;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        }
+        @media (min-width: 1024px) {
+            .accordion {
+                height: 120px;
+            }
+        }
+
+        .accordion__header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            height: 80px;
+            cursor: pointer;
+            transition: background 0.3s ease, height 0.4s ease;
+            background: none;
+            border: none;
+            width: 100%;
+            border-radius: inherit;
+        }
+        @media (min-width: 1024px) {
+            .accordion__header {
+                height: 120px;
+            }
+        }
+
+        .accordion.is-active .accordion__header {
+            border-bottom-right-radius: 0;
+            border-bottom-left-radius: 0;
+        }
+
+        .accordions.has-active-accordion .accordion:not(.is-active) .accordion__header {
+            height: 50px;
+        }
+        @media (min-width: 1024px) {
+            .accordions.has-active-accordion .accordion:not(.is-active) .accordion__header {
+                height: 85px;
+            }
+        }
+
+        .accordion__title {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 500;
+            text-transform: uppercase;
+            color: #f7f1e3;
+        }
+        @media (min-width: 1024px) {
+            .accordion__title {
+                font-size: 20px;
+            }
+        }
+
+        .accordion__icons {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+        }
+        @media (min-width: 1024px) {
+            .accordion__icons {
+                width: 25px;
+                height: 25px;
+            }
+        }
+
+        .accordion__icon,
+        .accordion__icon svg {
+            width: inherit;
+            height: inherit;
+        }
+
+        .accordion__icon.accordion__icon--expand svg {
+            fill: #22edc8;
+        }
+
+        .accordion__icon.accordion__icon--close svg {
+            fill: #ff5252;
+        }
+
+        .accordion__icon {
+            opacity: 0;
+            visibility: hidden;
+            display: flex;
+            position: absolute;
+            transition: opacity 0.4s ease, visibility 0.4s ease;
+        }
+
+        .accordion:not(.is-active) .accordion__icon--expand,
+        .accordion.is-active .accordion__icon--close {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .accordion__content {
+            display: flex;
+            flex-direction: column;
+            gap: 48px;
+            opacity: 0;
+            visibility: visible;
+            max-height: 0;
+            overflow: hidden;
+            padding: 0 24px;
+            color: #efe9dc;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            transition: opacity 0.5s ease;
+        }
+        @media (min-width: 1440px) {
+            .accordion__content {
+                flex-direction: row;
+            }
+        }
+
+        .menu li:hover{
+        /*    make the border glow*/
+            border: 1px solid #22edc8;
+            /*at an time interval*/
+            animation: glow 1s ease-in-out infinite alternate;
+
+
+        }
+
+        @keyframes glow{
+            from{
+                border-color: #22edc8;
+                box-shadow: 0 0 10px #22edc8;
+            }
+            to{
+                border-color: #22edc8;
+                box-shadow: 0 0 20px #22edc8;
+            }
+        }
+
+
+        .accordion__content figure {
+            display: flex;
+            flex: 0.35;
+        }
+
+        .accordion__content img {
+            aspect-ratio: 16/9;
+            width: 100%;
+            height: 100%;
+        }
+
+        .accordion__content p {
+            font-family: "Source Sans Pro", sans-serif;
+            font-size: 18px;
+            letter-spacing: 0.3px;
+            line-height: 0.7;
+            flex: 0.65;
+        }
+
+        .accordion.is-active .accordion__content {
+            padding-top: 24px;
+            opacity: 1;
+            visibility: visible;
+            max-height: initial;
+            transition-delay: 0.6s;
+        }
+        @media (min-width: 1024px) {
+            .accordion.is-active .accordion__content {
+                padding-top: 48px;
+            }
+        }
+    </style>
+
+
+
+
+</head>
+<body>
+
+
+
+
+<div class="header" style="width: 100%; background-color: #000; opacity: 0.9;">
+    <div class="cont" style="max-width: 1100px; margin: 0 auto;">
+        <div class="navbar" style="width: 100%; display: flex; justify-content: space-between;">
+            <div class="logo" style="padding: 0.5em;">
+                <h1 style="color: #fff;font-size: 30px;">DanceSphere</h1>
+            </div>
+            <div class="menu" style="color: #fff;">
+                <ul style="display: flex; list-style: none;">
+                    <li><a href="../dashboard/dash.html" style="text-decoration: none; padding: 1.7em; display: inline-block; transition: all 0.5s; position: relative;font-family: 'Poppins', sans-serif; font-size: 20px;color: white;">DashBoard</a></li>
+                    <li><a href="#" style="text-decoration: none; padding: 1.7em; display: inline-block; transition: all 0.5s; position: relative;font-family: 'Poppins', sans-serif; font-size: 20px;color: white"">History</a></li>
+                    <li><a href="../login/index.html" style="text-decoration: none; padding: 1.7em; display: inline-block; transition: all 0.5s; position: relative;font-family: 'Poppins', sans-serif; font-size: 20px;color: white"">LogOut</a></li>
+<!--                    <li><a href="#" style="text-decoration: none; padding: 1.7em; display: inline-block; transition: all 0.5s; position: relative; border: none;">Hakkımızda</a></li>-->
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<div class="container">
+    <h1>History</h1>
+    <section class="accordions">
+        <ul class="accordions__inner" style="list-style-type: none">
+            <li class="accordion">
+                <button class="accordion__header" aria-expanded="false" aria-controls="accordion-content-1" id="accordion-1">
+                    <p class="accordion__title">Folk 1</p>
+                    <div class="accordion__icons">
+          <span class="accordion__icon accordion__icon--expand">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+              <path
+                      d="M240 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H32c-17.7 0-32 14.3-32 32s14.3 32 32 32H176V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H384c17.7 0 32-14.3 32-32s-14.3-32-32-32H240V80z" />
+            </svg>
+          </span>
+                        <span class="accordion__icon accordion__icon--close">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+              <path
+                      d="M416 256c0 17.7-14.3 32-32 32L32 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z" />
+            </svg>
+          </span>
+                    </div>
+                </button>
+                <div class="accordion__content" aria-hidden="true" id="accordion-content-1">
+                    <div>
+                        <p>
+                            <p>Date : 10/08/2023</p>
+                            <p>Time : 10:00 AM</p>
+                            <p>Pose Analysis Results:</p>
+                                Overall Match: 85%
+
+                        </p>
+                    </div>
+                    <div >
+<pre style="padding-right: -280px; font-size: 20px;">
+Errors in Joints:
+Head: 10%
+Shoulders: 5%
+Arms: 8%
+Torso: 7%
+Hips: 6%
+Legs: 9%
+Feet: 12%
+</pre>
+                    </div>
+                    <figure>
+                        <img src="https://www.timescale.com/blog/content/images/2023/04/what-is-a-time-series-graph_img2.png"
+                             style="height:300px;width: 400px;"
+
+                        />
+                    </figure>
+                </div>
+            </li>
+            <li class="accordion">
+                <button class="accordion__header" aria-expanded="false" aria-controls="accordion-content-2" id="accordion-2">
+                    <p class="accordion__title">Martial</p>
+                    <div class="accordion__icons">
+          <span class="accordion__icon accordion__icon--expand">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+              <path
+                      d="M240 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H32c-17.7 0-32 14.3-32 32s14.3 32 32 32H176V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H384c17.7 0 32-14.3 32-32s-14.3-32-32-32H240V80z" />
+            </svg>
+          </span>
+                        <span class="accordion__icon accordion__icon--close">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+              <path
+                      d="M416 256c0 17.7-14.3 32-32 32L32 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z" />
+            </svg>
+          </span>
+                    </div>
+                </button>
+                <div class="accordion__content" aria-hidden="true" id="accordion-content-2">
+                    <div>
+                        <p>
+                        <p>Date : 21/08/2023</p>
+                        <p>Time : 06:00 AM</p>
+                        <p>Pose Analysis Results:</p>
+                        Overall Match: 70%
+
+                        </p>
+                    </div>
+                    <div >
+<pre style="padding-right: -280px; font-size: 20px;">
+Errors in Joints:
+Head: 4%
+Shoulders: 7%
+Arms: 7%
+Torso: 9%
+Hips: 16%
+Legs: 4%
+Feet: 12%
+</pre>
+                    </div>
+                    <figure>
+                        <img src="https://www.timescale.com/blog/content/images/2023/04/what-is-a-time-series-graph_img2.png" style="height:300px;width: 400px;"/>
+                    </figure>
+                </div>
+            </li>
+            <li class="accordion">
+                <button class="accordion__header" aria-expanded="false" aria-controls="accordion-content-3" id="accordion-3">
+                    <p class="accordion__title">Bharathanatiyam</p>
+                    <div class="accordion__icons">
+          <span class="accordion__icon accordion__icon--expand">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+              <path
+                      d="M240 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H32c-17.7 0-32 14.3-32 32s14.3 32 32 32H176V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H384c17.7 0 32-14.3 32-32s-14.3-32-32-32H240V80z" />
+            </svg>
+          </span>
+                        <span class="accordion__icon accordion__icon--close">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+              <path
+                      d="M416 256c0 17.7-14.3 32-32 32L32 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z" />
+            </svg>
+          </span>
+                    </div>
+                </button>
+                <div class="accordion__content" aria-hidden="true" id="accordion-content-3">
+                    <div>
+                        <p>
+                        <p>Date : 22/10/2023</p>
+                        <p>Time : 11:00 PM</p>
+                        <p>Pose Analysis Results:</p>
+                        Overall Match: 90%
+
+                        </p>
+                    </div>
+                    <div >
+<pre style="padding-right: -280px; font-size: 20px;">
+Errors in Joints:
+Head: 2%
+Shoulders: 5%
+Arms: 8%
+Torso: 7%
+Hips: 7%
+Legs: 9%
+Feet: 8%
+</pre>
+                    </div>
+                    <figure>
+                        <img src="https://www.timescale.com/blog/content/images/2023/04/what-is-a-time-series-graph_img2.png" style="height:300px;width: 400px;"/>
+                    </figure>
+                </div>
+            </li>
+            <li class="accordion">
+                <button class="accordion__header" aria-expanded="false" aria-controls="accordion-content-4" id="accordion-4">
+                    <p class="accordion__title">Classical</p>
+                    <div class="accordion__icons">
+          <span class="accordion__icon accordion__icon--expand">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+              <path
+                      d="M240 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H32c-17.7 0-32 14.3-32 32s14.3 32 32 32H176V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H384c17.7 0 32-14.3 32-32s-14.3-32-32-32H240V80z" />
+            </svg>
+          </span>
+                        <span class="accordion__icon accordion__icon--close">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+              <path
+                      d="M416 256c0 17.7-14.3 32-32 32L32 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z" />
+            </svg>
+          </span>
+                    </div>
+                </button>
+                <div class="accordion__content" aria-hidden="true" id="accordion-content-4">
+                    <div>
+                        <p>
+                        <p>Date : 20/11/2023</p>
+                        <p>Time : 08:00 PM</p>
+                        <p>Pose Analysis Results:</p>
+                        Overall Match: 65%
+
+                        </p>
+                    </div>
+                    <div >
+<pre style="padding-right: -280px; font-size: 20px;">
+Errors in Joints:
+Head: 7%
+Shoulders: 5%
+Arms: 17%
+Torso: 27%
+Hips: 15%
+Legs: 9%
+Feet: 4%
+</pre>
+                    </div>
+                    <figure>
+                        <img src="https://www.timescale.com/blog/content/images/2023/04/what-is-a-time-series-graph_img2.png" style="height:300px;width: 400px;" />
+                    </figure>
+                </div>
+            </li>
+        </ul>
+    </section>
+</div>
+
+<script>
+    const accordionComponent = document.querySelector(".accordions");
+    const accordions = document.querySelectorAll(".accordion");
+
+    const states = {
+        default: {
+            desktop: 120,
+            mobile: 80,
+        },
+        active: {
+            desktop: 148,
+            mobile: 104,
+        },
+        inactive: {
+            desktop: 80,
+            mobile: 50,
+        },
+    };
+
+    const desktopBp = window.matchMedia("(min-width: 1024px)");
+
+    const getInactiveAccordions = () => {
+        return [...accordions].filter((accordion) => {
+            return !accordion.classList.contains("is-active");
+        });
+    };
+
+    const closeAccordion = (accordion) => {
+        const header = accordion.querySelector(".accordion__header");
+        const content = accordion.querySelector(".accordion__content");
+        accordion.classList.remove("is-active");
+        header.setAttribute("aria-expanded", false);
+        content.setAttribute("aria-hidden", true);
+    };
+
+    const resetAccordionStates = () => {
+        accordionComponent.classList.remove("has-active-accordion");
+        accordions.forEach((accordion) => {
+            closeAccordion(accordion);
+        });
+        gsap.to(accordions, {
+            height: desktopBp.matches ? states.default.desktop : states.default.mobile,
+            duration: 2,
+            ease: desktopBp.matches
+                ? Elastic.easeOut.config(1, 0.8)
+                : Elastic.easeOut.config(0.8, 0.95),
+        });
+    };
+
+    desktopBp.addEventListener("change", () => {
+        const activeAccordion = document.querySelector(".accordion.is-active");
+
+        if (activeAccordion) {
+            return;
+        }
+
+        gsap.to(accordions, {
+            height: desktopBp.matches ? states.default.desktop : states.default.mobile,
+            duration: 2,
+            ease: desktopBp.matches
+                ? Elastic.easeOut.config(1, 0.8)
+                : Elastic.easeOut.config(0.8, 0.95),
+        });
+    });
+
+    const expandAccordion = (accordion, header, content) => {
+        if (accordion.classList.contains("is-active")) {
+            resetAccordionStates();
+            return;
+        }
+        accordions.forEach((accordion) => {
+            closeAccordion(accordion);
+        });
+        accordionComponent.classList.add("has-active-accordion");
+        accordion.classList.add("is-active");
+        header.setAttribute("aria-expanded", true);
+        content.setAttribute("aria-hidden", false);
+        gsap.to(getInactiveAccordions(), {
+            height: desktopBp.matches
+                ? states.inactive.desktop
+                : states.inactive.mobile,
+            duration: 1.8,
+            ease: desktopBp.matches
+                ? Elastic.easeOut.config(1, 0.7)
+                : Elastic.easeOut.config(0.8, 0.7),
+        });
+        gsap.to(accordion, {
+            height:
+                content.scrollHeight +
+                (desktopBp.matches ? states.active.desktop : states.active.mobile),
+            duration: 2.2,
+            ease: desktopBp.matches
+                ? Elastic.easeOut.config(1, 0.4)
+                : Elastic.easeOut.config(0.6, 0.8),
+        });
+    };
+
+    accordions.forEach((accordion) => {
+        const header = accordion.querySelector(".accordion__header");
+        const content = accordion.querySelector(".accordion__content");
+
+        header.addEventListener("click", () =>
+            expandAccordion(accordion, header, content)
+        );
+    });
+
+    const updateAccordionSizing = () => {
+        const activeAccordion = document.querySelector(".accordion.is-active");
+
+        if (!activeAccordion) {
+            return;
+        }
+        const content = activeAccordion.querySelector(".accordion__content");
+        const currentHeight = parseInt(activeAccordion.style.height);
+        if (currentHeight === content.scrollHeight + 148) {
+            return;
+        }
+
+        activeAccordion.style.height = `${content.scrollHeight + 148}px`;
+    };
+
+    let timeout = false;
+    window.addEventListener("resize", function () {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => {
+            updateAccordionSizing();
+        }, 100);
+    });
+
+</script>
+</body>
+</html>
